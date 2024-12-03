@@ -10,6 +10,9 @@ import org.springframework.kafka.annotation.EnableKafka;
 @EnableKafka
 public class MidasCoreApplication {
 
+	
+	
+	
     public static void main(String[] args) {
         SpringApplication.run(MidasCoreApplication.class, args);
     }
