@@ -53,7 +53,16 @@ public class KafkaConsumer {
 			    senderBalanceSubtraction();   
 			    recipientBalanceAddition();
 			    
-
+			    
+			    
+			    
+                System.out.println(databaseConduit.findById(sender.get().getId()).get().getBalance());
+                System.out.println(databaseConduit.findById(recipient.get().getId()).get().getBalance());
+			    
+                System.out.println("W's balance");
+                System.out.println(databaseConduit.findById(5).get().getBalance());
+                
+                
 			} else {
 				logger.info("Not valid:" + transactionData.toString());
 			}   
