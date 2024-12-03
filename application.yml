@@ -18,16 +18,13 @@ spring:
     consumer: 
      bootstrap-servers: localhost:9092 
      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-     value-deserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
+     value-deserializer: org.apache.kafka.common.serialization.ByteArrayDeserializer
      properties:
       spring:
        json:
         trusted:
          packages: com.jpmc.midascore.foundation.Transaction
-       deserializer:
-        value:
-         delegate:
-          class: org.apache.kafka.common.serialization.ByteArrayDeserializer
+       deserializer: 
          default:
           type: false
 general:
