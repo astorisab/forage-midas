@@ -22,7 +22,9 @@ import com.jpmc.midascore.foundation.Transaction;
 public class KafkaConsumer {
 
 		static final Logger logger = LoggerFactory.getLogger(KafkaConsumer.class);
-
+		static int counter = 1;
+		
+		
 		@KafkaListener(topics="${general.kafka-topic}", groupId="midas-group")
 		public void listen(Object transaction) {
 			byte[] data =  (byte[]) ((ConsumerRecord) transaction).value();
@@ -30,8 +32,8 @@ public class KafkaConsumer {
 			ObjectMapper mapper = new ObjectMapper();
 			try {
 				Transaction transactionData = mapper.readValue(value, Transaction.class);
-				logger.info(value);
-				logger.info(Float.toString(transactionData.getAmount()));
+				logger.info(String.format("Amount attached to transaction %d: %f", counter, transactionData.getAmount()));
+				counter += 1;
 			} catch (JsonProcessingException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
