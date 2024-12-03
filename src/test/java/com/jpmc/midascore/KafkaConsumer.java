@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,6 +14,7 @@ import org.springframework.kafka.support.serializer.SerializationUtils;
 import org.springframework.stereotype.Component;
 import java.io.*;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jpmc.midascore.foundation.Transaction;
 
@@ -25,11 +27,15 @@ public class KafkaConsumer {
 		public void listen(Object transaction) {
 			byte[] data =  (byte[]) ((ConsumerRecord) transaction).value();
 			String value = new String(data);
-			logger.info(value);
-			
-			
-//			MessagingMessageConverter messagingMessageConverter = new MessagingMessageConverter();
-//			Object data = messagingMessageConverter.toMessage(transactionDataObject, null, null, null).getPayload();
+			ObjectMapper mapper = new ObjectMapper();
+			try {
+				Transaction transactionData = mapper.readValue(value, Transaction.class);
+				logger.info(value);
+				logger.info(Float.toString(transactionData.getAmount()));
+			} catch (JsonProcessingException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			
 		
 		    
