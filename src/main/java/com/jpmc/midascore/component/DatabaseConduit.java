@@ -6,6 +6,7 @@ import com.jpmc.midascore.foundation.Transaction;
 import com.jpmc.midascore.repository.TransactionRepository;
 import com.jpmc.midascore.repository.UserRepository;
 
+import java.math.BigDecimal;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,7 +47,8 @@ public class DatabaseConduit {
     public boolean validateTransaction(Transaction transaction) {
     	Optional<UserRecord> senderId = findById(transaction.getSenderId());
     	Optional<UserRecord> recipientId = findById(transaction.getRecipientId());
-    	if(senderId.isEmpty() || recipientId.isEmpty() || transaction.getAmount() >= senderId.get().getBalance()) {
+    	int difference =  transaction.getAmount().compareTo(senderId.get().getBalance());
+    	if(senderId.isEmpty() || recipientId.isEmpty() || difference > 0) { 
     		return false;
     	}
     	return true;

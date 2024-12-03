@@ -16,6 +16,7 @@ import org.springframework.stereotype.Component;
 import org.testcontainers.shaded.com.google.common.base.Optional;
 
 import java.io.*;
+import java.math.BigDecimal;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -28,6 +29,8 @@ public class KafkaConsumer {
 
 		static final Logger logger = LoggerFactory.getLogger(KafkaConsumer.class);
 		private Transaction transactionData;
+		java.util.Optional<UserRecord> sender;
+		java.util.Optional<UserRecord> recipient;
 		@Autowired
 		private DatabaseConduit databaseConduit; 
 		
@@ -37,15 +40,26 @@ public class KafkaConsumer {
 			byte[] data =  (byte[]) ((ConsumerRecord) transaction).value();
 			String value = new String(data);
 			ObjectMapper mapper = new ObjectMapper();
+			
 			try {
 				transactionData = mapper.readValue(value, Transaction.class);
+
+					
+			if(databaseConduit.validateTransaction(transactionData)) {	
+					
 				transactionStore();
-//				String[] transactionPartition = String.valueOf(transactionData.getAmount()).split("[.]");
-//				java.util.Optional<UserRecord> sender = databaseConduit.findById(transactionData.getSenderId());
-//				String[] senderBalancePartition = String.valueOf(sender.get().getBalance()).split("[.]");
-//				getIntegerDecimalSubtraction(transactionPartition, senderBalancePartition);
-//				java.util.Optional<UserRecord> recipient = databaseConduit.findById(transactionData.getRecipientId());
-			
+			    sender = databaseConduit.findById(transactionData.getSenderId());			    
+			    recipient = databaseConduit.findById(transactionData.getRecipientId());
+			    senderBalanceSubtraction();   
+			    recipientBalanceAddition();
+			    
+
+			} else {
+				logger.info("Not valid:" + transactionData.toString());
+			}   
+			    
+			    
+			  
 				
 			} catch (JsonProcessingException e) {
 				// TODO Auto-generated catch block
@@ -53,38 +67,36 @@ public class KafkaConsumer {
 			}    
 		}
 		
-		private boolean transactionStore() {
+		private void transactionStore() {
 			TransactionRecord tData = null;
-			if(databaseConduit.validateTransaction(transactionData)) {
-				tData = databaseConduit.save(new TransactionRecord(transactionData));
-//				logger.info(String.format("Amount attached to transaction %o: %.02f", tData.getId(), transactionData.getAmount()));
+			
+			tData = databaseConduit.save(new TransactionRecord(transactionData));
+			logger.info(String.format("Amount attached to transaction %o: %f", tData.getId(), transactionData.getAmount()));
 
-				return true;
-			}
-			logger.info("Not valid:" + transactionData.toString());
-			return true;
+			
+
+		}
+		
+		private void senderBalanceSubtraction() {
+			BigDecimal senderAmount = sender.get().getBalance();
+			BigDecimal senderSubtraction = transactionData.getAmount();
+			UserRecord updatedSender = sender.get();
+			updatedSender.setBalance(senderAmount.subtract(senderSubtraction));
+			databaseConduit.update(updatedSender);
+			
+		}
+		private void recipientBalanceAddition() {
+			BigDecimal recipientAmount = recipient.get().getBalance();
+			BigDecimal recipientAddition = transactionData.getAmount();
+			UserRecord updatedRecipient = recipient.get();
+			updatedRecipient.setBalance(recipientAmount.add(recipientAddition));
+			databaseConduit.update(updatedRecipient);
+	
 		}
 		
 		
-		private int getIntegerDecimalSubtraction(String[] transactionPartition, String[] senderPartition) {
-			int currentTransactionCents = Integer.valueOf(transactionPartition[1]);
-			int currentSenderAmountCents = Integer.valueOf(senderPartition[1]);
-			int centDifference = currentSenderAmountCents - currentTransactionCents;
-			if(centDifference < 0) {
-				return (Integer.parseInt(transactionPartition[0]) * 100) + ((1 + centDifference));
-			}
-			return (Integer.parseInt(transactionPartition[0]) * 100) + centDifference;
-		}
 		
-//		private int getIntegerDecimalAddition(String[] transactionPartition, String[] senderPartition) {
-//			int currentTransactionCents = Integer.valueOf(transactionPartition[1]);
-//			int currentSenderAmountCents = Integer.valueOf(senderPartition[1]);
-//			int centDifference = currentSenderAmountCents - currentTransactionCents;
-//			if(centDifference < 0) {
-//				return (Integer.parseInt(transactionPartition[0]) * 100) + ((1 + centDifference));
-//			}
-//			return (Integer.parseInt(transactionPartition[0]) * 100) + centDifference;
-//		}
+
 
 
 }

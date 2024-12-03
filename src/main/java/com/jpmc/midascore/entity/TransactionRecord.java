@@ -1,5 +1,7 @@
 package com.jpmc.midascore.entity;
 
+import java.math.BigDecimal;
+
 import com.jpmc.midascore.foundation.Transaction;
 
 import jakarta.persistence.Column;
@@ -22,7 +24,7 @@ public class TransactionRecord {
 	private long recipientId;
 	
 	@Column(nullable = false)
-	private float amount;
+	private BigDecimal amount;
 
 	
 	public TransactionRecord(Transaction transaction) {
@@ -57,11 +59,11 @@ public class TransactionRecord {
 		this.recipientId = recipientId;
 	}
 
-	public float getAmount() {
+	public BigDecimal getAmount() {
 		return amount;
 	}
 
-	public void setAmount(float amount) {
+	public void setAmount(BigDecimal amount) {
 		this.amount = amount;
 	}
 	
