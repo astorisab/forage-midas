@@ -30,23 +30,23 @@ public class TaskFiveTests {
 
     @Test
     void task_five_verifier() throws InterruptedException {
-//        userPopulator.populate();
-//        String[] transactionLines = fileLoader.loadStrings("/test_data/rueiwoqp.tyruei");
-//        for (String transactionLine : transactionLines) {
-//            kafkaProducer.send(transactionLine);
-//        }
-//        Thread.sleep(2000);
-//
-//        logger.info("----------------------------------------------------------");
-//        logger.info("----------------------------------------------------------");
-//        logger.info("----------------------------------------------------------");
-//        logger.info("submit the following output to complete the task (include begin and end output denotations)");
-//        StringBuilder output = new StringBuilder("\n").append("---begin output ---").append("\n");
-//        for (int i = 0; i < 13; i++) {
-//            Balance balance = balanceQuerier.query((long) i);
-//            output.append(balance.toString()).append("\n");
-//        }
-//        output.append("---end output ---");
-//        logger.info(output.toString());
+        userPopulator.populate();
+        String[] transactionLines = fileLoader.loadStrings("/test_data/rueiwoqp.tyruei");
+        for (String transactionLine : transactionLines) {
+            kafkaProducer.send(transactionLine);
+        }
+        Thread.sleep(2000);
+
+        logger.info("----------------------------------------------------------");
+        logger.info("----------------------------------------------------------");
+        logger.info("----------------------------------------------------------");
+        logger.info("submit the following output to complete the task (include begin and end output denotations)");
+        StringBuilder output = new StringBuilder("\n").append("---begin output ---").append("\n");
+        for (int i = 0; i < 13; i++) {
+            Balance balance = balanceQuerier.query((long) i);
+            output.append(balance.toString()).append("\n");
+        }
+        output.append("---end output ---");
+        logger.info(output.toString());
     }
 }
