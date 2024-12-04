@@ -62,18 +62,18 @@ public class KafkaConsumer {
 			    
 			    
 			    
-			    logger.info(String.format("Recipient incentive: %s", incentive.toString()));
-                System.out.println(databaseConduit.findById(sender.get().getId()).get().getBalance());
-                System.out.println(databaseConduit.findById(recipient.get().getId()).get().getBalance());
-			    
-                System.out.print("Wilbur's balance is: ");
-                System.out.println(databaseConduit.findById(9).get().getBalance());
+//			    logger.info(String.format("Recipient incentive: %s", incentive.toString()));
+//                System.out.println(databaseConduit.findById(sender.get().getId()).get().getBalance());
+//                System.out.println(databaseConduit.findById(recipient.get().getId()).get().getBalance());
+//			    
+//                System.out.print("Wilbur's balance is: ");
+//                System.out.println(databaseConduit.findById(9).get().getBalance());
                 
                 
                 
                 
 			} else {
-				logger.info("Not valid:" + transactionData.toString());
+//				logger.info("Not valid:" + transactionData.toString());
 			}   
 			    
 			    
@@ -89,7 +89,7 @@ public class KafkaConsumer {
 			TransactionRecord tData = null;
 			
 			tData = databaseConduit.save(new TransactionRecord(transactionData));
-			logger.info(String.format("Amount attached to transaction %o: %f", tData.getId(), transactionData.getAmount()));
+//			logger.info(String.format("Amount attached to transaction %o: %f", tData.getId(), transactionData.getAmount()));
 
 			
 

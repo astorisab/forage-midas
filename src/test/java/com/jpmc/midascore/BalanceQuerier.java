@@ -1,6 +1,9 @@
 package com.jpmc.midascore;
 
 import com.jpmc.midascore.foundation.Balance;
+
+import java.math.BigDecimal;
+
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
@@ -14,6 +17,8 @@ public class BalanceQuerier {
     }
 
     public Balance query(Long userId) {
+
+
         String url = "http://localhost:33400/balance?userId=" + userId;
         return restTemplate.getForObject(url, Balance.class);
     }
