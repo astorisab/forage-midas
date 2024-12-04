@@ -9,10 +9,12 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.support.converter.MessagingMessageConverter;
 import org.springframework.kafka.support.serializer.SerializationUtils;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestTemplate;
 import org.testcontainers.shaded.com.google.common.base.Optional;
 
 import java.io.*;
@@ -22,6 +24,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jpmc.midascore.component.DatabaseConduit;
 import com.jpmc.midascore.entity.*;
+import com.jpmc.midascore.foundation.Incentive;
 import com.jpmc.midascore.foundation.Transaction;
 
 @Component
@@ -33,6 +36,9 @@ public class KafkaConsumer {
 		java.util.Optional<UserRecord> recipient;
 		@Autowired
 		private DatabaseConduit databaseConduit; 
+		@Autowired
+		RestTemplate restTemplate;
+		
 		
 		
 		@KafkaListener(topics="${general.kafka-topic}", groupId="midas-group")
@@ -50,17 +56,18 @@ public class KafkaConsumer {
 				transactionStore();
 			    sender = databaseConduit.findById(transactionData.getSenderId());			    
 			    recipient = databaseConduit.findById(transactionData.getRecipientId());
+			    BigDecimal incentive = getIncentiveValue(transactionData);
 			    senderBalanceSubtraction();   
 			    recipientBalanceAddition();
 			    
 			    
 			    
-			    
+			    logger.info(String.format("Recipient incentive: %s", incentive.toString()));
                 System.out.println(databaseConduit.findById(sender.get().getId()).get().getBalance());
                 System.out.println(databaseConduit.findById(recipient.get().getId()).get().getBalance());
 			    
-                System.out.println("W's balance");
-                System.out.println(databaseConduit.findById(5).get().getBalance());
+//                System.out.println("W's balance");
+//                System.out.println(databaseConduit.findById(5).get().getBalance());
                 
                 
 			} else {
@@ -101,6 +108,11 @@ public class KafkaConsumer {
 			updatedRecipient.setBalance(recipientAmount.add(recipientAddition));
 			databaseConduit.update(updatedRecipient);
 	
+		}
+		
+		private BigDecimal getIncentiveValue(Transaction transaction) {
+			ResponseEntity<Incentive> value = restTemplate.postForEntity("http://localhost:8080/incentive", transaction, Incentive.class);			
+			return value.getBody().getAmount();
 		}
 		
 		
