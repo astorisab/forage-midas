@@ -9,6 +9,12 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class MidasCoreController {
 
+	@GetMapping("/balance")
+	public ResponseEntity<String> balanceWelcomeScreen(){
+		return ResponseEntity.ok("<h1>Welcome to the Balance API</h1>");
+	}
+	
+	
 	@GetMapping("/balance/{userId}")
 	public ResponseEntity<String> getBalance(@PathVariable long userId){
 		
