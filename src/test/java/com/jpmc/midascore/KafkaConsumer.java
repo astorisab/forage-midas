@@ -58,7 +58,7 @@ public class KafkaConsumer {
 			    recipient = databaseConduit.findById(transactionData.getRecipientId());
 			    BigDecimal incentive = getIncentiveValue(transactionData);
 			    senderBalanceSubtraction();   
-			    recipientBalanceAddition();
+			    recipientBalanceAddition(incentive);
 			    
 			    
 			    
@@ -66,8 +66,10 @@ public class KafkaConsumer {
                 System.out.println(databaseConduit.findById(sender.get().getId()).get().getBalance());
                 System.out.println(databaseConduit.findById(recipient.get().getId()).get().getBalance());
 			    
-//                System.out.println("W's balance");
-//                System.out.println(databaseConduit.findById(5).get().getBalance());
+                System.out.print("Wilbur's balance is: ");
+                System.out.println(databaseConduit.findById(9).get().getBalance());
+                
+                
                 
                 
 			} else {
@@ -101,9 +103,9 @@ public class KafkaConsumer {
 			databaseConduit.update(updatedSender);
 			
 		}
-		private void recipientBalanceAddition() {
+		private void recipientBalanceAddition(BigDecimal incentive) {
 			BigDecimal recipientAmount = recipient.get().getBalance();
-			BigDecimal recipientAddition = transactionData.getAmount();
+			BigDecimal recipientAddition = transactionData.getAmount().add(incentive);
 			UserRecord updatedRecipient = recipient.get();
 			updatedRecipient.setBalance(recipientAmount.add(recipientAddition));
 			databaseConduit.update(updatedRecipient);
